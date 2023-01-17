@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Tech4Dev Wallet</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../vendors/feather/feather.css">
+  <link rel="stylesheet" href="../../vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="../../vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="../../vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/favicon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth px-0">
+        <div class="row w-100 mx-0">
+          <div class="col-lg-4 mx-auto">
+            <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+              <div class="brand-logo">
+              <!-- place logo here  -->
+          <%- include('partials/logo')  %>
+              </div>
+              <h4>Hello! let's get started</h4>
+              <h6 class="fw-light">Register your account</h6>
+              <form class="pt-3" id="formRegister">
+                <div class="form-group">
+                  <input type="text"  class="form-control form-control-lg" id="fullname"   placeholder="fullname" required >
+                </div>
+
+                <div class="form-group">
+                  <input type="text"  class="form-control form-control-lg" id="username" placeholder="Username" required>
+                </div>
+
+                <div class="form-group">
+                  <input type="password" class="form-control form-control-lg" id="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                  <input type="password"  class="form-control form-control-lg" id="exampleInputPassword1" placeholder="repeat password" required>
+                </div>
+                <div class="mt-3">
+                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" >SIGN IN</button>
+                </div>
+                <div class="my-2 d-flex justify-content-between align-items-center">
+                  <div class="form-check">
+                    <label class="form-check-label text-muted">
+                      <input type="checkbox" class="form-check-input">
+                      Keep me signed in
+                    </label>
+                  </div>
+                
+                </div>
+                <div class="mb-2">
+                  <!-- <button type="button" class="btn btn-block btn-facebook auth-form-btn">
+                    <i class="ti-facebook me-2"></i>Connect using facebook
+                  </button> -->
+                </div>
+                <div class="text-center mt-4 fw-light">
+                  Not interested? <a href="/login" class="text-primary">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  
+<script>
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger'
+  },
+  buttonsStyling: false
+})
+
+
+
+
+
+
+const form = document.getElementById('formRegister');
+if(form){
+  form.addEventListener("submit",(e)=>{
+    e.preventDefault();
+register()
+ 
+  })
+  }
+
+ function register(){
+  const fullname =  document.getElementById('fullname').value
+  const username =   document.getElementById('username').value
+    const pasword = document.getElementById('password').value
+   
+axios.post('http://127.0.0.1:4000/registerCustomer',{
+    CustomerName: fullname,
+    username: username,
+    password: pasword
+}).then(res=>{
+  console.log(res)
+if(res.data[0].message == "username taken")
+{
+  Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'User aleady taken',
+})
+}else if(res.data[0].message == "data created"){
+  Swal.fire(
+      'Account Created !',
+      'Thanks for joining us.',
+      'success'
+    ).then(rs=>{
+       window.location = '/'
+    })
+   
+}
+
+
+
+}).catch(err=>{
+  console.log(err)
+})
+
+
+}
+</script>
+  
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="../../vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/hoverable-collapse.js"></script>
+  <script src="../../js/template.js"></script>
+  <script src="../../js/settings.js"></script>
+  <script src="../../js/todolist.js"></script>
+  <!-- endinject -->
+</body>
+
+</html>

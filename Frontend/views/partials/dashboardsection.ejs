@@ -1,0 +1,96 @@
+<div class="col-lg-4 d-flex flex-column">
+  <div class="row flex-grow">
+    <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+      <div class="card bg-primary card-rounded">
+        <div class="card-body pb-0">
+          <h3 class="welcome-text" style="color:white">Good Morning, 
+            <span id="username" class="text-black fw-bold " style="color: white !important;"
+            >   </span></h3>
+          <div class="row">
+            <div class="col-sm-4">
+              <p class="status-summary-ight-white mb-1">Your Current Balance</p>
+              <h2  id="balance"class="text-info"> </h2>
+            </div>
+            <div class="col-sm-8">
+              <div class="status-summary-chart-wrapper pb-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                <canvas id="status-summary" width="299" height="66" style="display: block; width: 299px; height: 66px;" class="chartjs-render-monitor"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col-sm-6 text-center mb-2 ">
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalWithdrawal">Withdraw</button>
+              </div>
+              <div class="col-sm-6 text-center mb-2 ">
+                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalTransfer">Transfer</button>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-12 grid-margin stretch-card">
+      <div class="card card-rounded">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="statistics-details d-flex align-items-center justify-content-between">
+                <div>
+                  <p class="statistics-title">Total Savings</p>
+                  <h3 id="totalSavings" class="rate-percentage"> </h3>
+                </div>
+                <div>
+                  <p class="statistics-title">Total Withdrawals</p>
+                  <h3 id="totalWithdrawal" class="rate-percentage"></h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-4 d-flex flex-column">
+  <div class="row flex-grow">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card card-rounded">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="align-items-center">
+                <h4 class="card-title card-title-dash text-center">Transfers</h4>
+              </div>
+              <br>
+              <div class="">
+            <div class="d-flex justify-content-between">
+              <h6>Date and Time</h6>
+              <h6>Amount</h6>
+            </div>
+            <div class="row" id="transfer">
+
+            </div>
+            <br>
+            <div class="align-items-center">
+              <h4 class="card-title card-title-dash text-center">Withdrawals</h4>
+            </div>
+            <br>
+            <div class="">
+          <div class="d-flex justify-content-between">
+            <h6>Date and Time</h6>
+            <h6>Amount</h6>
+          </div>
+          <div class="row" id="withdraw">
+
+          </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  
+ 
+</div>
