@@ -534,13 +534,18 @@ const r =()=>{ authAxios.post(`${url}/dashboard`).then(rs=>{
  if (rs.data[0].transactions !== null){
   let rezult = rs.data[0].transactions.map(element =>{
     return `<div class="d-flex justify-content-between">
-  <h6>${new Date(element.date)}</h6>
+  <h6>${new Date(element.date * 1000)}</h6>
 <h6>${element.amount}</h6>
 </div>
 `
   })
   document.getElementById('withdraw').innerHTML = rezult.join("")
  }
+ 
+// else if(rs.data[0].Ttransactions !== null){
+
+ //}
+ 
 })
 }
 
@@ -601,7 +606,7 @@ r()
 
         authAxios.post(`${url}/transfer`, {
           beneficiaryname: beneficiaryName,
-          Amount: transAmount,
+          Amount: Number(transAmount),
           Pin: transPin
         }).then(result => {
           if (result.data[0].message === 'Account does not exist') {

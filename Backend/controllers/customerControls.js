@@ -16,9 +16,14 @@ const transaction = {
     amount: null,
     date: null
 }
-
-let allTransactions = []
-
+let WTransactions = []
+const Ttrans = {
+    text: null,
+    user: null,
+    amount: null,
+    date: null
+}
+let transTransactions = []
 const register = async(req, res) =>{
     const cus = {cusName: req.body.CustomerName,
     username: req.body.username,
@@ -84,33 +89,10 @@ const dashboard =async (req,res)=>{
         let balance = 0.00
         let totaldep = 0.00
         let totalwith = 0.00
-        let totaltrans = 0
+        let totaltrans = 0.00
 
            const customerID = req.decoded.custid
-           allTransactions = []
-    /* savings object*/
-        await deposit.findAll({
-            where: {
-                custid: customerID
-            },
-            order: [["createdAt", "DESC"]]
-        }).then(results => {
-            if (results === null) {
-                console.log(results)
-            } else {
-                results.map(result => {
-                    let dTransaction = Object.create(transaction)
-                    dTransaction.text = 'credit transaction'
-                    dTransaction.type = 'Deposit'
-                    dTransaction.amount = result.Amountdep
-                    dTransaction.date = result.createdAt
-                    allTransactions.push(dTransaction)
-                })
-            }
-        }).catch(error => {
-            console.log(error)
-        })
-
+            WTransactions = []
     /* withdrawal object*/
         withdrawal.findAll({
             where: {
@@ -127,7 +109,7 @@ const dashboard =async (req,res)=>{
                 wTransaction.type = 'withdrawal'
                 wTransaction.amount = result.Amountwithdraw
                 wTransaction.date = result.createdAt
-                allTransactions.push(wTransaction)
+                WTransactions.push(wTransaction)
             })
         }
         }).catch(error => {
@@ -145,12 +127,12 @@ const dashboard =async (req,res)=>{
             console.log(results + 'is null')
         } else {
             results.map(result => {
-                let tTransaction = Object.create(transaction)
+                let tTransaction = Object.create(Ttrans)
                 tTransaction.text = 'Debit transaction'
-                tTransaction.type = result.Username
+                tTransaction.user = result.Username
                 tTransaction.amount = result.Amounttrans
                 tTransaction.date = result.createdAt
-                allTransactions.push(tTransaction)
+                transTransactions.push(tTransaction)
             })
         }
         }).catch(error => {
@@ -169,22 +151,18 @@ const dashboard =async (req,res)=>{
                         totaltrans =  results.statementtrans
                         balance = results.totalbal
                         totalwith = results.statementwithdraw
-                        res.status(200).json([{ customer: customerID, fullname: req.decoded.cusName,transfers:totaltrans, savings: totaldep, totalwith: totalwith, balance: balance, transactions: allTransactions }])
+                        res.status(200).json([{ customer: customerID, fullname: req.decoded.cusName,transfers:totaltrans, savings: totaldep, totalwith: totalwith, balance: balance, transactions: WTransactions, Ttransactions:transTransactions }])
                     }
                 }).catch(err => {
                     console.log(err)
                 })
            }
 
+          
 /*Deposit functionality*/
 const doDeposit = async (req, res) => {
     const dep={ custid : req.decoded.custid,
-    amountdep : req.body.Amount}
-    const passWord = req.decoded.password
-    console.log('.......here is the password' + passWord)
-    
-    const pin = req.body.Pin
-
+        amountdep : req.body.Amount}
     statement.findOne({
         where: {
             custid: custid
@@ -196,8 +174,8 @@ const doDeposit = async (req, res) => {
         } else {
             deposit.create(dep).then(rs=>{
                 statement.update({
-                    statementdeposit: (result.statementdeposit + parseInt(amountdep)),
-                    totalbal: (result.totalbal + amountdep)
+                    statementdeposit: result.statementdeposit + parseInt(amountdep),
+                    totalbal: result.totalbal + amountdep
                 },
                 {
                     where: {
@@ -219,8 +197,6 @@ const doDeposit = async (req, res) => {
 const doWithdrawal = async (req, res) => {
     
     const customerID = req.decoded.custid
-    const passWord = req.decoded.password
-    console.log('.......here is the password' + passWord)
     const amount = req.body.Amount
     const pin = req.body.Pin
     const withdraw = {
@@ -288,17 +264,14 @@ const statementCreate = async (customerid) => {
 /*Transfers Functionality */
 const doTransfer = async (req, res) => {
     const customerID = req.decoded.custid
-    const transferpin = req.decoded.password
-    console.log(transferpin)
     const beneficiaryName = req.body.beneficiaryname
     const amountTrans = req.body.Amount
     const pin = req.body.Pin
     let beneficiaryId
     const trans ={Amounttrans: parseInt(amountTrans),
         custid: customerID,
-        Username: beneficiaryName}
+        beneficiaryName: beneficiaryName}
 
-    console.log('transferamount =' + amountTrans)
     Customer.findOne({
         where: {
             username: beneficiaryName
@@ -314,6 +287,7 @@ const doTransfer = async (req, res) => {
                     custid: customerID
                 }
             }).then(rs => {
+                console.log(rs)
                 if (rs !== null) {
                     if (amountTrans > rs.totalbal) {
                         res.status(200).json([{ message: 'insufficient funds' }])
@@ -321,19 +295,74 @@ const doTransfer = async (req, res) => {
                         const validity = bcrypt.compareSync(pin, req.decoded.password)
                         if (validity === true) {
                             transfer.create(trans)
-                            .then(rs => {
-                                statement.update({
-                                    statementtrans: (result.statementtrans + amountTrans),
-                                    totalbal: (result.totalbal - amountTrans)
-                                },
-                                {
+                            .then(async rz => {
+                                statement.findOne({
                                     where: {
                                         custid: customerID
                                     }
                                 })
-                                .then(rs => {
-                                    res.status(200).json([{ message: 'Transfer successful' }])
-                                    console.log(rs)
+                                .then(rs =>{
+                                    if (rs) {
+                                        statement.update({
+                                            statementtrans: rs.statementtrans + rz.Amounttrans,
+                                            totalbal: rs.totalbal - rz.Amounttrans
+                                        }, {
+                                            where: {
+                                                custid: rz.custid
+                                            }
+                                        })
+                                        deposit.create({
+                                            Amountdep: rz.Amounttrans,
+                                            custid: beneficiaryId
+                                        })
+                                        .then(rs => {
+                                            console.log('deposit created is------------' + rs.Amountdep)
+                                        })
+                                        statement.findOne({
+                                            where: {
+                                                custid: beneficiaryId
+                                            }
+                                        })
+                                        .then(rr => {
+                                            if (rr) {
+
+                                                statement.update({
+                                                    statementdeposit: rr.statementdeposit + rz.Amounttrans,
+                                                    totalbal: rr.totalbal + rz.Amounttrans
+                                                },
+                                                    {
+                                                        where: {
+                                                            custid: beneficiaryId
+                                                        }
+                                                    }
+                                                )
+                                                .then(r => {
+                                                    console.log(' this is receiver statement' + r)
+                                                    res.status(200).json([{ message: 'Transfer successful' }])
+                                                })}
+                                                else{
+                                                    statementCreate(beneficiaryId)
+                                                .then(result => {
+                                                    statement.update({
+                                                        statementdeposit: result.statementdeposit+rz.Amounttrans,
+                                                        totalbal: result.totalbal + rz.Amounttrans
+                                                    },
+                                                        {
+                                                            where: {
+                                                                custid: beneficiaryId
+                                                            }
+                                                        }
+                                                    ).then(result => {
+                                                        console.log('....' + result)
+                                                        res.status(200).json([{ message: 'Transfer successful' }])
+                                                    })
+                                                })
+                                            }
+                                            
+                                        })
+
+
+                                    }
                                 })
                                })  
                             }

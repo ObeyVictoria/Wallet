@@ -11,7 +11,7 @@ const transfer = sequelize.define('transfer',{
         type:Sequelize.DOUBLE,
         allowNull:false
     },
-    Username:{
+    beneficiaryName:{
         type:Sequelize.STRING,
         allowNull:false,
     },
