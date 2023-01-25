@@ -129,7 +129,7 @@ const dashboard =async (req,res)=>{
             results.map(result => {
                 let tTransaction = Object.create(Ttrans)
                 tTransaction.text = 'Debit transaction'
-                tTransaction.user = result.Username
+                tTransaction.user = result.beneficiaryName
                 tTransaction.amount = result.Amounttrans
                 tTransaction.date = result.createdAt
                 transTransactions.push(tTransaction)
@@ -317,7 +317,7 @@ const doTransfer = async (req, res) => {
                                         })
                                         .then(rs => {
                                             console.log('deposit created is------------' + rs.Amountdep)
-                                        })
+                                        
                                         statement.findOne({
                                             where: {
                                                 custid: beneficiaryId
@@ -327,8 +327,8 @@ const doTransfer = async (req, res) => {
                                             if (rr) {
 
                                                 statement.update({
-                                                    statementdeposit: rr.statementdeposit + rz.Amounttrans,
-                                                    totalbal: rr.totalbal + rz.Amounttrans
+                                                    statementdeposit: rr.statementdeposit + rs.Amountdep,
+                                                    totalbal: rr.totalbal + rs.Amountdep//rz.Amounttrans
                                                 },
                                                     {
                                                         where: {
@@ -344,8 +344,8 @@ const doTransfer = async (req, res) => {
                                                     statementCreate(beneficiaryId)
                                                 .then(result => {
                                                     statement.update({
-                                                        statementdeposit: result.statementdeposit+rz.Amounttrans,
-                                                        totalbal: result.totalbal + rz.Amounttrans
+                                                        statementdeposit: result.statementdeposit+rs.Amountdep,
+                                                        totalbal: result.totalbal + rs.Amountdep
                                                     },
                                                         {
                                                             where: {
@@ -358,8 +358,8 @@ const doTransfer = async (req, res) => {
                                                     })
                                                 })
                                             }
-                                            
-                                        })
+                                        })    
+                                  })
 
 
                                     }
